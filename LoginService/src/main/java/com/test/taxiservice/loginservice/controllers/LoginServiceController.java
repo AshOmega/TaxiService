@@ -1,0 +1,45 @@
+package com.test.taxiservice.loginservice.controllers;
+
+import com.test.taxiservice.loginservice.constants.Constants;
+import com.test.taxiservice.loginservice.model.redis.AccessToken;
+import com.test.taxiservice.loginservice.redis.AccessTokenRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Random;
+
+@RestController
+public class LoginServiceController
+{
+  @Autowired
+  private AccessTokenRepository accessTokenRepository;
+
+  private static final String BEARER_ = "Bearer ";
+
+  @GetMapping(Constants.LOGIN_PROFILE_URL)
+  public String getProfile(HttpServletRequest request, HttpServletResponse response){
+
+    return "Successfully called endpoint-" + Constants.LOGIN_PROFILE_URL;
+  }
+
+
+  @GetMapping(Constants.CREATE_ACCESS_TOKEN)
+  public String createToken(HttpServletRequest request, HttpServletResponse response,
+      @RequestParam(value = "mobileNumber", required = true) String mobileNumber){
+
+    Random random = new Random();
+    int token = random.nextInt(999999);
+
+    AccessToken accessToken = new AccessToken(
+        mobileNumber, BEARER_ + token, -1L);
+    accessTokenRepository.save(accessToken);
+    return String.valueOf(token);
+  }
+
+
+
+}
